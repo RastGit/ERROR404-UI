@@ -1,207 +1,223 @@
 -- ╔══════════════════════════════════════════════════════════╗
--- ║         ERROR 404 UI - Przykład użycia                   ║
+-- ║         ERROR 404 UI - Przykład użycia (Rayfield API)    ║
 -- ╚══════════════════════════════════════════════════════════╝
 
--- Załaduj bibliotekę (zmień URL na swój rawgithub link)
-local Error404UI = loadstring(game:HttpGet(
+local Library = loadstring(game:HttpGet(
     "https://raw.githubusercontent.com/RastGit/ERROR404-UI/refs/heads/main/Error404ui.lua?token=GHSAT0AAAAAADRHFUKX3MXZCT3JIB726MZO2PGBLJQ"
 ))()
 
 -- ══════════════════════════════════════════════════════════════
 -- TWORZENIE OKNA
+-- Intro ERROR → 404 odpala się automatycznie
+-- Okno otworzy się samo po intro
 -- ══════════════════════════════════════════════════════════════
-local Window = Error404UI.new({
-    Title     = "Mój Cheat",
-    Subtitle  = "v1.0 • by Ktoś",
-    ToggleKey = Enum.KeyCode.Insert,  -- klawisz otwierania (desktop)
-    ShowIntro = true,                 -- animacja ERROR / 404 na starcie
+local Window = Library.CreateWindow({
+    Name             = "Mój Script",
+    LoadingSubtitle  = "by Ktoś | v1.0",
+    ToggleUIKeybind  = Enum.KeyCode.Insert,
+    ShowIntro        = true,
 })
 
 -- ══════════════════════════════════════════════════════════════
--- ZAKŁADKA 1 – GŁÓWNA
+-- ZAKŁADKA 1 – GRACZ
 -- ══════════════════════════════════════════════════════════════
-local TabMain = Window:AddTab({
-    Title = "Główna",
-    Icon  = "🏠",
+local TabGracz = Window:CreateTab({
+    Name = "Gracz",
+    Icon = "🏃",
 })
 
--- Sekcja
-local SectionPlayer = TabMain:AddSection("Gracz")
+TabGracz:CreateSection("Ruch")
 
--- Toggle
-local flyToggle = SectionPlayer:AddToggle({
-    Title    = "Latanie (Fly)",
-    Default  = false,
-    Callback = function(value)
-        print("Fly:", value)
-        -- tu twój kod latania
+local Fly = TabGracz:CreateToggle({
+    Name         = "Latanie",
+    CurrentValue = false,
+    Callback     = function(Value)
+        print("Fly:", Value)
     end,
 })
 
--- Toggle z własnym wywołaniem
-local speedToggle = SectionPlayer:AddToggle({
-    Title    = "Szybkość x2",
-    Default  = false,
-    Callback = function(value)
+local SpeedSlider = TabGracz:CreateSlider({
+    Name         = "WalkSpeed",
+    Range        = {16, 250},
+    Increment    = 1,
+    Suffix       = " sp/s",
+    CurrentValue = 16,
+    Callback     = function(Value)
         local char = game.Players.LocalPlayer.Character
         if char and char:FindFirstChild("Humanoid") then
-            char.Humanoid.WalkSpeed = value and 32 or 16
+            char.Humanoid.WalkSpeed = Value
         end
     end,
 })
 
--- Slider
-local speedSlider = SectionPlayer:AddSlider({
-    Title    = "WalkSpeed",
-    Min      = 16,
-    Max      = 200,
-    Default  = 16,
-    Suffix   = " studs/s",
-    Callback = function(value)
+local JumpSlider = TabGracz:CreateSlider({
+    Name         = "JumpPower",
+    Range        = {50, 500},
+    Increment    = 5,
+    Suffix       = "",
+    CurrentValue = 50,
+    Callback     = function(Value)
         local char = game.Players.LocalPlayer.Character
         if char and char:FindFirstChild("Humanoid") then
-            char.Humanoid.WalkSpeed = value
+            char.Humanoid.JumpPower = Value
         end
     end,
 })
 
--- Separator
-SectionPlayer:AddSeparator()
+TabGracz:CreateDivider()
+TabGracz:CreateSection("Akcje")
 
--- Label
-SectionPlayer:AddLabel("Ustawienia jump power:")
-
--- Slider dla skoku
-local jumpSlider = SectionPlayer:AddSlider({
-    Title    = "JumpPower",
-    Min      = 50,
-    Max      = 500,
-    Default  = 50,
-    Suffix   = "",
-    Callback = function(value)
-        local char = game.Players.LocalPlayer.Character
-        if char and char:FindFirstChild("Humanoid") then
-            char.Humanoid.JumpPower = value
-        end
-    end,
-})
-
--- Przycisk
-SectionPlayer:AddButton({
-    Title    = "Resetuj Postać",
+TabGracz:CreateButton({
+    Name     = "Resetuj postać",
     Callback = function()
         game.Players.LocalPlayer.Character:BreakJoints()
     end,
 })
 
--- ══════════════════════════════════════════════════════════════
--- ZAKŁADKA 2 – USTAWIENIA
--- ══════════════════════════════════════════════════════════════
-local TabSettings = Window:AddTab({
-    Title = "Ustawienia",
-    Icon  = "⚙️",
+TabGracz:CreateButton({
+    Name     = "Resetuj prędkość",
+    Callback = function()
+        SpeedSlider:Set(16)
+        JumpSlider:Set(50)
+        Library.Notify({
+            Title   = "Reset",
+            Content = "Prędkości zostały zresetowane.",
+            Type    = "success",
+        })
+    end,
 })
 
-local SectionUI = TabSettings:AddSection("Interfejs")
+-- ══════════════════════════════════════════════════════════════
+-- ZAKŁADKA 2 – NARZĘDZIA
+-- ══════════════════════════════════════════════════════════════
+local TabTools = Window:CreateTab({
+    Name = "Narzędzia",
+    Icon = "🔧",
+})
 
--- Dropdown
-local themeDropdown = SectionUI:AddDropdown({
-    Title    = "Motyw",
-    Options  = {"Fioletowy", "Czerwony", "Niebieski"},
-    Default  = "Fioletowy",
-    Callback = function(selected)
-        print("Wybrany motyw:", selected)
-        Error404UI.Notify({
-            Title   = "Motyw zmieniony",
-            Message = "Wybrano: " .. selected,
-            Type    = "success",
+TabTools:CreateSection("Teleport")
+
+local MapDropdown = TabTools:CreateDropdown({
+    Name          = "Lokacja",
+    Options       = {"Spawn", "Sklep", "Boss", "Sekretne", "Plaza"},
+    CurrentOption = "Spawn",
+    Callback      = function(Value)
+        print("Wybrano:", Value)
+    end,
+})
+
+TabTools:CreateButton({
+    Name     = "Teleportuj",
+    Callback = function()
+        Library.Notify({
+            Title    = "Teleport",
+            Content  = "Teleportuję do: " .. MapDropdown.Value,
+            Type     = "info",
             Duration = 3,
         })
     end,
 })
 
--- TextBox
-local nameBox = SectionUI:AddTextBox({
-    Title       = "Nazwa postaci",
-    Placeholder = "Wpisz nick...",
-    Default     = "",
-    Callback    = function(text)
-        print("Wpisano:", text)
-    end,
-})
+TabTools:CreateDivider()
+TabTools:CreateSection("Misc")
 
--- Keybind
-local keybind = SectionUI:AddKeybind({
-    Title    = "Skrót Fly",
-    Default  = Enum.KeyCode.F,
-    Callback = function(key)
-        print("Nowy klawisz:", key.Name)
+local GodToggle = TabTools:CreateToggle({
+    Name         = "GodMode (NoClip)",
+    CurrentValue = false,
+    Callback     = function(Value)
+        -- Przykładowy noclip
+        if Value then
+            game:GetService("RunService").Stepped:Connect(function()
+                if GodToggle.Value then
+                    for _, part in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
+                        if part:IsA("BasePart") then
+                            part.CanCollide = false
+                        end
+                    end
+                end
+            end)
+        end
     end,
 })
 
 -- ══════════════════════════════════════════════════════════════
--- ZAKŁADKA 3 – NARZĘDZIA
+-- ZAKŁADKA 3 – USTAWIENIA
 -- ══════════════════════════════════════════════════════════════
-local TabTools = Window:AddTab({
-    Title = "Narzędzia",
-    Icon  = "🔧",
+local TabSettings = Window:CreateTab({
+    Name = "Ustawienia",
+    Icon = "⚙️",
 })
 
-local SectionTools = TabTools:AddSection("Teleport")
+TabSettings:CreateSection("Interfejs")
 
--- Dropdown
-local mapDropdown = SectionTools:AddDropdown({
-    Title    = "Lokacja",
-    Options  = {"Spawn", "Sklep", "Boss", "Sekretne miejsce"},
-    Default  = "Spawn",
-    Callback = function(v) end,
-})
-
-SectionTools:AddButton({
-    Title    = "Teleportuj",
-    Callback = function()
-        local selected = mapDropdown.Value
-        Error404UI.Notify({
-            Title   = "Teleport",
-            Message = "Teleportuję do: " .. selected,
-            Type    = "info",
+local FlyKeybind = TabSettings:CreateKeybind({
+    Name           = "Klawisz Fly",
+    CurrentKeybind = "F",
+    Callback       = function(Value)
+        Library.Notify({
+            Title   = "Keybind zmieniony",
+            Content = "Nowy klawisz: " .. Value.Name,
+            Type    = "success",
         })
+    end,
+})
+
+TabSettings:CreateInput({
+    Name            = "Własna wiadomość",
+    PlaceholderText = "Wpisz coś...",
+    CurrentString   = "",
+    Callback        = function(Value)
+        print("Input:", Value)
+    end,
+})
+
+TabSettings:CreateDivider()
+TabSettings:CreateSection("Powiadomienia - test")
+
+TabSettings:CreateButton({
+    Name     = "Sukces ✓",
+    Callback = function()
+        Library.Notify({ Title="Sukces!", Content="Operacja zakończona pomyślnie.", Type="success", Duration=4 })
+    end,
+})
+
+TabSettings:CreateButton({
+    Name     = "Błąd ✕",
+    Callback = function()
+        Library.Notify({ Title="Błąd!", Content="Coś poszło nie tak.", Type="error", Duration=4 })
+    end,
+})
+
+TabSettings:CreateButton({
+    Name     = "Ostrzeżenie ⚠",
+    Callback = function()
+        Library.Notify({ Title="Uwaga", Content="Sprawdź ustawienia.", Type="warning", Duration=4 })
+    end,
+})
+
+TabSettings:CreateButton({
+    Name     = "Info ℹ",
+    Callback = function()
+        Library.Notify({ Title="Info", Content="Nowa wersja dostępna.", Type="info", Duration=4 })
     end,
 })
 
 -- ══════════════════════════════════════════════════════════════
 -- ZAKŁADKA 4 – INFO
 -- ══════════════════════════════════════════════════════════════
-local TabInfo = Window:AddTab({
-    Title = "Info",
-    Icon  = "ℹ️",
+local TabInfo = Window:CreateTab({
+    Name = "Info",
+    Icon = "ℹ️",
 })
 
-local SectionInfo = TabInfo:AddSection("O bibliotece")
-
-TabInfo:AddLabel("ERROR 404 UI Library v1.0")
-TabInfo:AddLabel("Darmowa biblioteka GUI dla Roblox.")
-TabInfo:AddLabel("github.com/TWOJ_GITHUB/Error404UI")
-
-TabInfo:AddSeparator()
-
-TabInfo:AddButton({
-    Title    = "Pokaż powiadomienie sukcesu",
-    Callback = function()
-        Error404UI.Notify({ Title = "Sukces!", Message = "Wszystko działa poprawnie.", Type = "success" })
-    end,
+TabInfo:AddParagraph({
+    Title   = "ERROR 404 UI Library v2.0",
+    Content = "Darmowa, open-source biblioteka GUI dla Roblox. Styl inspirowany Rayfield. Działa na PC i mobile.",
 })
 
-TabInfo:AddButton({
-    Title    = "Pokaż błąd",
-    Callback = function()
-        Error404UI.Notify({ Title = "Błąd!", Message = "Coś poszło nie tak.", Type = "error" })
-    end,
+TabInfo:AddParagraph({
+    Title   = "Jak używać",
+    Content = "INSERT - otwiera/zamyka menu (PC)\nPrzycisk ⚡ - otwiera/zamyka menu (Mobile)",
 })
 
-TabInfo:AddButton({
-    Title    = "Pokaż ostrzeżenie",
-    Callback = function()
-        Error404UI.Notify({ Title = "Uwaga", Message = "Sprawdź ustawienia.", Type = "warning" })
-    end,
-})
+TabInfo:CreateLabel("github.com/RastGit/ERROR404-UI")
