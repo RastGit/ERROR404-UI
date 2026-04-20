@@ -2,12 +2,12 @@
 
 <div align="center">
 
-![Version](https://img.shields.io/badge/version-1.0-blueviolet?style=for-the-badge)
+![Version](https://img.shields.io/badge/version-2.0-blueviolet?style=for-the-badge)
 ![Roblox](https://img.shields.io/badge/platform-Roblox-red?style=for-the-badge)
 ![License](https://img.shields.io/badge/license-MIT-green?style=for-the-badge)
 
 **Lekka, stylowa biblioteka GUI dla Roblox.**  
-Ciemny motyw, płynne animacje, intro `ERROR` → `404`, pełna obsługa PC i mobile.
+Rayfield-style API | Ciemny motyw | Animowane intro `ERROR → 404` | PC + Mobile
 
 </div>
 
@@ -16,20 +16,20 @@ Ciemny motyw, płynne animacje, intro `ERROR` → `404`, pełna obsługa PC i mo
 ## 📋 Spis treści
 
 - [Szybki start](#-szybki-start)
-- [Tworzenie okna](#-tworzenie-okna-windowcreate)
-- [Zakładki (Tabs)](#-zakładki-tabs)
-- [Sekcje](#-sekcje)
+- [CreateWindow](#-createwindow)
+- [CreateTab](#-createtab)
 - [Elementy UI](#-elementy-ui)
-  - [Przycisk](#przycisk-addbutton)
-  - [Toggle](#toggle-addtoggle)
-  - [Slider](#slider-addslider)
-  - [Dropdown](#dropdown-adddropdown)
-  - [TextBox](#textbox-addtextbox)
-  - [Keybind](#keybind-addkeybind)
-  - [Label](#label-addlabel)
-  - [Separator](#separator-addseparator)
-- [Powiadomienia](#-powiadomienia)
-- [Własny motyw](#-własny-motyw)
+  - [CreateSection](#createsection)
+  - [CreateButton](#createbutton)
+  - [CreateToggle](#createtoggle)
+  - [CreateSlider](#createslider)
+  - [CreateDropdown](#createdropdown)
+  - [CreateInput](#createinput)
+  - [CreateKeybind](#createkeybind)
+  - [CreateLabel](#createlabel)
+  - [AddParagraph](#addparagraph)
+  - [CreateDivider](#createdivider)
+- [Notify](#-notify)
 - [Metody okna](#-metody-okna)
 - [FAQ](#-faq)
 
@@ -38,21 +38,23 @@ Ciemny motyw, płynne animacje, intro `ERROR` → `404`, pełna obsługa PC i mo
 ## 🚀 Szybki start
 
 ```lua
-local Error404UI = loadstring(game:HttpGet(
-    "https://raw.githubusercontent.com/RastGit/ERROR404-UI/refs/heads/main/Error404ui.lua?token=GHSAT0AAAAAADRHFUKX3MXZCT3JIB726MZO2PGBLJQ"
+local Library = loadstring(game:HttpGet(
+    "https://raw.githubusercontent.com/RastGit/ERROR404-UI/refs/heads/main/Error404ui.lua?token=GHSAT0AAAAAADRHFUKXZYGUEEQQ7XY6UFEK2PGCFTQ"
 ))()
 
-local Window = Error404UI.new({
-    Title     = "Mój Script",
-    Subtitle  = "v1.0",
-    ShowIntro = true,
+local Window = Library.CreateWindow({
+    Name            = "Mój Script",
+    LoadingSubtitle = "by Ktoś | v1.0",
+    ToggleUIKeybind = Enum.KeyCode.Insert,
+    ShowIntro       = true,
 })
 
-local Tab = Window:AddTab({ Title = "Główna", Icon = "🏠" })
-local Section = Tab:AddSection("Gracz")
+local Tab = Window:CreateTab({ Name = "Główna", Icon = "🏠" })
 
-Section:AddButton({
-    Title    = "Kliknij mnie",
+Tab:CreateSection("Gracz")
+
+Tab:CreateButton({
+    Name     = "Kliknij mnie",
     Callback = function()
         print("Kliknięto!")
     end,
@@ -61,419 +63,264 @@ Section:AddButton({
 
 ---
 
-## 🪟 Tworzenie okna (`Error404UI.new`)
+## 🪟 CreateWindow
 
 ```lua
-local Window = Error404UI.new({
-    Title     = "Nazwa menu",        -- Tytuł w pasku (string)
-    Subtitle  = "v1.0 • autor",      -- Podtytuł pod tytułem (string)
-    ToggleKey = Enum.KeyCode.Insert, -- Klawisz otwierania na PC (domyślnie: Insert)
-    ShowIntro = true,                -- Czy pokazać intro ERROR/404 (domyślnie: true)
-    Size      = {                    -- Opcjonalny rozmiar okna
-        Width  = 340,
-        Height = 540,
-    },
-    Theme = {                        -- Opcjonalne nadpisanie kolorów (patrz: Własny motyw)
-        Accent = Color3.fromRGB(255, 50, 100),
-    },
+local Window = Library.CreateWindow({
+    Name             = "Nazwa okna",       -- Tytuł w pasku
+    LoadingSubtitle  = "v1.0 • autor",    -- Podtytuł pod tytułem
+    ToggleUIKeybind  = Enum.KeyCode.Insert, -- Klawisz otwierania (PC)
+    ShowIntro        = true,               -- Animacja ERROR/404 (domyślnie: true)
 })
 ```
 
 | Parametr | Typ | Domyślnie | Opis |
 |----------|-----|-----------|------|
-| `Title` | `string` | `"ERROR 404 UI"` | Tytuł okna |
-| `Subtitle` | `string` | `"v1.0"` | Podtytuł |
-| `ToggleKey` | `Enum.KeyCode` | `Insert` | Klawisz toggle (PC) |
+| `Name` | `string` | `"ERROR 404 UI"` | Tytuł okna |
+| `LoadingSubtitle` | `string` | `"v2.0"` | Podtytuł |
+| `ToggleUIKeybind` | `Enum.KeyCode` | `Insert` | Klawisz toggle (PC) |
 | `ShowIntro` | `bool` | `true` | Animacja intro |
-| `Size.Width` | `number` | `340` | Szerokość okna w px |
-| `Size.Height` | `number` | `540` | Wysokość okna w px |
-| `Theme` | `table` | *(domyślny motyw)* | Nadpisanie kolorów |
+
+> Na **mobile** zamiast klawisza pojawia się pływający przycisk ⚡ w lewym dolnym rogu.  
+> Okno **otwiera się automatycznie** po zakończeniu intro.
 
 ---
 
-## 📑 Zakładki (Tabs)
-
-Zakładki to główne sekcje menu, widoczne jako ikony na lewym pasku.
+## 📑 CreateTab
 
 ```lua
-local Tab = Window:AddTab({
-    Title = "Gracz",   -- Tekst tooltipa przy hoverze
-    Icon  = "🏠",      -- Emoji lub znak (wyświetlany w pasku bocznym)
+local Tab = Window:CreateTab({
+    Name = "Gracz",   -- Tooltip po najechaniu na ikonę
+    Icon = "🏃",      -- Ikona w bocznym pasku (emoji)
 })
 ```
 
 | Parametr | Typ | Opis |
 |----------|-----|------|
-| `Title` | `string` | Tooltip pokazujący się po najechaniu |
-| `Icon` | `string` | Ikona (emoji lub Unicode) |
+| `Name` | `string` | Tooltip zakładki |
+| `Icon` | `string` | Emoji / znak Unicode |
 
-**Zwraca:** obiekt `Tab`, na którym wywołujesz dalsze metody.
-
----
-
-## 📦 Sekcje
-
-Sekcje grupują elementy wewnątrz zakładki z nagłówkiem.
-
-```lua
-local Section = Tab:AddSection("Ustawienia gracza")
-```
-
-Elementy dodane do `Section` zachowują kolejność layoutu.  
-Możesz dodawać elementy **bezpośrednio do zakładki** (`Tab:AddButton(...)`) lub **do sekcji** (`Section:AddButton(...)`).
+**Zwraca:** obiekt `Tab` z metodami poniżej.
 
 ---
 
 ## 🎛️ Elementy UI
 
-### Przycisk (`AddButton`)
+### CreateSection
+
+Nagłówek grupujący elementy.
 
 ```lua
-Section:AddButton({
-    Title    = "Teleportuj do spawna",
+Tab:CreateSection("Nazwa sekcji")
+```
+
+---
+
+### CreateButton
+
+```lua
+Tab:CreateButton({
+    Name     = "Zrób coś",
     Callback = function()
-        -- kod po kliknięciu
+        -- twój kod
     end,
-    Color = Color3.fromRGB(220, 50, 90), -- opcjonalny kolor tła (domyślnie: Surface)
 })
 ```
 
-| Parametr | Typ | Opis |
-|----------|-----|------|
-| `Title` | `string` | Tekst przycisku |
-| `Callback` | `function` | Funkcja wywoływana po kliknięciu |
-| `Color` | `Color3` | Kolor tła (opcjonalny) |
-
 ---
 
-### Toggle (`AddToggle`)
-
-Przełącznik włącz/wyłącz.
+### CreateToggle
 
 ```lua
-local myToggle = Section:AddToggle({
-    Title    = "Fly",
-    Default  = false,      -- stan początkowy
-    Callback = function(value)
-        print("Toggle:", value)  -- value = true/false
+local MyToggle = Tab:CreateToggle({
+    Name         = "Fly",
+    CurrentValue = false,
+    Callback     = function(Value)
+        print(Value) -- true / false
     end,
 })
 
--- Odczyt wartości:
-print(myToggle.Value)
-
--- Ustawienie wartości z kodu:
-myToggle:SetValue(true)
-```
-
-| Parametr | Typ | Opis |
-|----------|-----|------|
-| `Title` | `string` | Etykieta |
-| `Default` | `bool` | Stan początkowy |
-| `Callback` | `function(bool)` | Wywołanie przy zmianie |
-
-**Zwraca:** `{ Value: bool, SetValue(bool) }`
-
----
-
-### Slider (`AddSlider`)
-
-Suwak z zakresem liczbowym.
-
-```lua
-local mySlider = Section:AddSlider({
-    Title    = "WalkSpeed",
-    Min      = 16,
-    Max      = 200,
-    Default  = 16,
-    Suffix   = " studs/s",   -- tekst po wartości (opcjonalny)
-    Callback = function(value)
-        print("Slider:", value)
-    end,
-})
+-- Ustawienie z kodu:
+MyToggle:Set(true)
 
 -- Odczyt:
-print(mySlider.Value)
-
--- Ustawienie:
-mySlider:SetValue(50)
+print(MyToggle.Value)
 ```
-
-| Parametr | Typ | Opis |
-|----------|-----|------|
-| `Title` | `string` | Etykieta |
-| `Min` | `number` | Minimalna wartość |
-| `Max` | `number` | Maksymalna wartość |
-| `Default` | `number` | Wartość startowa |
-| `Suffix` | `string` | Tekst po wartości (np. `"%"`) |
-| `Callback` | `function(number)` | Wywołanie przy zmianie |
-
-**Zwraca:** `{ Value: number, SetValue(number) }`
 
 ---
 
-### Dropdown (`AddDropdown`)
-
-Lista rozwijana z opcjami.
+### CreateSlider
 
 ```lua
-local myDropdown = Section:AddDropdown({
-    Title    = "Lokacja",
-    Options  = {"Spawn", "Sklep", "Boss"},
-    Default  = "Spawn",
-    Callback = function(selected)
-        print("Wybrano:", selected)
+local MySlider = Tab:CreateSlider({
+    Name         = "WalkSpeed",
+    Range        = {16, 250},   -- {Min, Max}
+    Increment    = 1,
+    Suffix       = " sp/s",     -- tekst po wartości (opcjonalny)
+    CurrentValue = 16,
+    Callback     = function(Value)
+        print(Value)
     end,
 })
 
--- Odczyt:
-print(myDropdown.Value)
-
--- Ustawienie:
-myDropdown:SetValue("Sklep")
-
--- Odświeżenie opcji:
-myDropdown:Refresh({"Nowa opcja 1", "Nowa opcja 2"})
+MySlider:Set(100)
+print(MySlider.Value)
 ```
-
-| Parametr | Typ | Opis |
-|----------|-----|------|
-| `Title` | `string` | Etykieta |
-| `Options` | `{string}` | Lista opcji |
-| `Default` | `string` | Domyślna opcja |
-| `Callback` | `function(string)` | Wywołanie przy wyborze |
-
-**Zwraca:** `{ Value: string, SetValue(str), Refresh(table) }`
 
 ---
 
-### TextBox (`AddTextBox`)
-
-Pole tekstowe do wpisywania tekstu.
+### CreateDropdown
 
 ```lua
-local myTextBox = Section:AddTextBox({
-    Title       = "Nazwa",
-    Placeholder = "Wpisz nick...",
-    Default     = "",
-    Callback    = function(text)
-        -- wywoływane po utracie fokusa lub naciśnięciu Enter
-        print("Tekst:", text)
+local MyDropdown = Tab:CreateDropdown({
+    Name          = "Lokacja",
+    Options       = {"Spawn", "Sklep", "Boss"},
+    CurrentOption = "Spawn",
+    Callback      = function(Value)
+        print(Value)
     end,
 })
 
--- Odczyt:
-print(myTextBox.Value)
-
--- Ustawienie:
-myTextBox:SetValue("nowy tekst")
+MyDropdown:Set("Sklep")
+MyDropdown:Refresh({"Nowa1", "Nowa2"})
+print(MyDropdown.Value)
 ```
-
-| Parametr | Typ | Opis |
-|----------|-----|------|
-| `Title` | `string` | Etykieta nad polem |
-| `Placeholder` | `string` | Tekst pomocniczy |
-| `Default` | `string` | Tekst startowy |
-| `Callback` | `function(string)` | Wywołanie po zatwierdzeniu |
-
-**Zwraca:** `{ Value: string, SetValue(str) }`
 
 ---
 
-### Keybind (`AddKeybind`)
-
-Przycisk do bindowania klawiszy.
+### CreateInput
 
 ```lua
-local myKeybind = Section:AddKeybind({
-    Title    = "Sprint",
-    Default  = Enum.KeyCode.LeftShift,
-    Callback = function(keyCode)
-        print("Nowy klawisz:", keyCode.Name)
+local MyInput = Tab:CreateInput({
+    Name            = "Pole tekstowe",
+    PlaceholderText = "Wpisz coś...",
+    CurrentString   = "",
+    Callback        = function(Value)
+        -- wywołuje się po Enter / utracie focusu
+        print(Value)
     end,
 })
 
--- Odczyt:
-print(myKeybind.Value)  -- zwraca Enum.KeyCode
-
--- Ustawienie:
-myKeybind:SetValue(Enum.KeyCode.F)
-```
-
-> Kliknij przycisk w UI → wciśnij dowolny klawisz → zostaje zapisany.
-
-| Parametr | Typ | Opis |
-|----------|-----|------|
-| `Title` | `string` | Etykieta |
-| `Default` | `Enum.KeyCode` | Domyślny klawisz |
-| `Callback` | `function(KeyCode)` | Wywołanie po zmianie |
-
-**Zwraca:** `{ Value: KeyCode, SetValue(KeyCode) }`
-
----
-
-### Label (`AddLabel`)
-
-Tekst informacyjny (read-only).
-
-```lua
-Tab:AddLabel("Wersja: 1.0.0")
-Tab:AddLabel("Autor: Ktoś")
+MyInput:Set("nowy tekst")
+print(MyInput.Value)
 ```
 
 ---
 
-### Separator (`AddSeparator`)
-
-Pozioma linia oddzielająca elementy.
+### CreateKeybind
 
 ```lua
-Section:AddSeparator()
+local MyKeybind = Tab:CreateKeybind({
+    Name           = "Sprint",
+    CurrentKeybind = "LeftShift",  -- nazwa z Enum.KeyCode
+    Callback       = function(Value)
+        print(Value.Name) -- Enum.KeyCode
+    end,
+})
+
+MyKeybind:Set(Enum.KeyCode.F)
+print(MyKeybind.Value) -- Enum.KeyCode
+```
+
+> Kliknij przycisk w UI → wciśnij klawisz → zostaje zapisany.
+
+---
+
+### CreateLabel
+
+```lua
+Tab:CreateLabel("Tekst informacyjny")
 ```
 
 ---
 
-## 🔔 Powiadomienia
-
-Powiadomienia są **globalne** – nie wymagają instancji okna.
+### AddParagraph
 
 ```lua
-Error404UI.Notify({
+Tab:AddParagraph({
+    Title   = "Nagłówek",
+    Content = "Dłuższy tekst opisu...",
+})
+```
+
+---
+
+### CreateDivider
+
+Pozioma linia oddzielająca.
+
+```lua
+Tab:CreateDivider()
+```
+
+---
+
+## 🔔 Notify
+
+Globalna funkcja – nie wymaga instancji okna.
+
+```lua
+Library.Notify({
     Title    = "Tytuł",
-    Message  = "Treść powiadomienia...",
-    Duration = 4,             -- czas w sekundach (domyślnie: 4)
-    Type     = "success",     -- "success" | "error" | "warning" | "info"
+    Content  = "Treść powiadomienia",
+    Duration = 4,       -- sekundy (domyślnie 4)
+    Type     = "success" -- "success" | "error" | "warning" | "info"
 })
 ```
 
 | Typ | Kolor | Ikona |
 |-----|-------|-------|
-| `"success"` | Zielony | ✓ |
-| `"error"` | Czerwony | ✕ |
-| `"warning"` | Pomarańczowy | ⚠ |
-| `"info"` | Fioletowy | ℹ |
-
-**Przykłady:**
-
-```lua
--- Sukces
-Error404UI.Notify({ Title = "Gotowe!", Message = "Fly włączony.", Type = "success" })
-
--- Błąd
-Error404UI.Notify({ Title = "Błąd", Message = "Nie można połączyć.", Type = "error", Duration = 6 })
-
--- Ostrzeżenie
-Error404UI.Notify({ Title = "Uwaga", Message = "Serwer jest pełny.", Type = "warning" })
-
--- Info
-Error404UI.Notify({ Title = "Info", Message = "Nowa wersja dostępna.", Type = "info" })
-```
-
----
-
-## 🎨 Własny motyw
-
-Podaj tabelę `Theme` przy tworzeniu okna, żeby nadpisać wybrane kolory:
-
-```lua
-local Window = Error404UI.new({
-    Title = "Red Theme",
-    Theme = {
-        Accent      = Color3.fromRGB(220, 50, 90),
-        AccentLight = Color3.fromRGB(255, 80, 120),
-        AccentDark  = Color3.fromRGB(160, 20, 60),
-        Toggle_On   = Color3.fromRGB(220, 50, 90),
-    },
-})
-```
-
-### Pełna lista kluczy motywu
-
-| Klucz | Domyślny kolor | Opis |
-|-------|---------------|------|
-| `Background` | `RGB(14,14,22)` | Tło okna |
-| `Surface` | `RGB(22,22,34)` | Tło elementów |
-| `SurfaceLight` | `RGB(30,30,46)` | Jaśniejsze tło |
-| `SurfaceMid` | `RGB(26,26,40)` | Średnie tło |
-| `Accent` | `RGB(100,60,255)` | Kolor akcentu |
-| `AccentLight` | `RGB(140,90,255)` | Jasny akcent |
-| `AccentDark` | `RGB(60,30,180)` | Ciemny akcent |
-| `Text` | `RGB(235,235,255)` | Tekst główny |
-| `TextDim` | `RGB(140,135,170)` | Tekst przyciemniony |
-| `TextMuted` | `RGB(90,85,120)` | Tekst wyciszony |
-| `Border` | `RGB(50,40,85)` | Obramowania |
-| `Danger` | `RGB(220,50,90)` | Kolor błędu/danger |
-| `Success` | `RGB(60,210,130)` | Kolor sukcesu |
-| `Warning` | `RGB(255,175,50)` | Kolor ostrzeżenia |
-| `Toggle_On` | `RGB(100,60,255)` | Toggle włączony |
-| `Toggle_Off` | `RGB(50,45,75)` | Toggle wyłączony |
+| `"success"` | 🟢 Zielony | ✓ |
+| `"error"` | 🔴 Czerwony | ✕ |
+| `"warning"` | 🟡 Pomarańczowy | ⚠ |
+| `"info"` | 🟣 Fioletowy | ℹ |
 
 ---
 
 ## 🔧 Metody okna
 
 ```lua
--- Otwórz menu
-Window:Open()
-
--- Zamknij menu
-Window:Close()
-
--- Przełącz (open ↔ close)
-Window:Toggle()
-
--- Usuń całe GUI
-Window:Destroy()
+Window:Open()     -- Otwórz menu
+Window:Close()    -- Zamknij menu
+Window:Toggle()   -- Przełącz open/close
+Window:Destroy()  -- Usuń całe GUI
 ```
 
 ---
 
 ## ❓ FAQ
 
-**Q: Czy działa na mobile?**  
-A: Tak. Na urządzeniach mobilnych automatycznie pojawia się pływający przycisk ⚡ w lewym dolnym rogu.
+**Q: Intro się nie pokazuje?**  
+A: Upewnij się że `ShowIntro = true` (domyślnie). Intro działa przez `CoreGui` z fallbackiem na `PlayerGui`.
+
+**Q: Okno nie otwiera się po intro?**  
+A: Okno otwiera się automatycznie po zakończeniu intro. Nie wywołuj `Window:Open()` ręcznie jeśli `ShowIntro = true`.
+
+**Q: Działa na mobile?**  
+A: Tak. Na mobile automatycznie pojawia się przycisk ⚡ w lewym dolnym rogu ekranu.
 
 **Q: Jak zmienić klawisz otwierania?**  
-A: Ustaw `ToggleKey = Enum.KeyCode.TWÓJ_KLAWISZ` przy tworzeniu okna.
+A: Ustaw `ToggleUIKeybind = Enum.KeyCode.TWÓJ_KLAWISZ` przy tworzeniu okna.
 
-**Q: Okno znika po respawnie?**  
-A: Biblioteka ustawia `ResetOnSpawn = false` i używa `CoreGui`, więc menu powinno zostać.
+**Q: Jak wyłączyć intro?**  
+A: `ShowIntro = false`
 
-**Q: Jak wyłączyć intro animację?**  
-A: Ustaw `ShowIntro = false` przy tworzeniu okna.
-
-**Q: Czy mogę mieć kilka okien naraz?**  
-A: Tak, każde wywołanie `Error404UI.new(...)` tworzy niezależne okno z własnym ScreenGui.
-
-**Q: Jak zrobić przycisk w kolorze czerwonym (danger)?**  
-A: Użyj parametru `Color`:
-```lua
-Section:AddButton({
-    Title = "Usuń",
-    Color = Color3.fromRGB(220, 50, 90),
-    Callback = function() end,
-})
-```
+**Q: Mogę mieć wiele okien?**  
+A: Tak, każdy `Library.CreateWindow()` to niezależne okno.
 
 ---
 
-## 📁 Struktura plików
+## 📁 Pliki
 
 ```
 Error404UI/
-├── Error404UI.lua    ← główna biblioteka
-├── Example.lua       ← przykład użycia
-└── README.md         ← ta dokumentacja
+├── Error404ui.lua   ← główna biblioteka
+├── Example.lua      ← przykład użycia
+└── README.md        ← dokumentacja
 ```
-
----
-
-## 📜 Licencja
-
-MIT — możesz używać, modyfikować i dystrybuować dowolnie.
 
 ---
 
 <div align="center">
-Made with ⚡ — <b>ERROR 404 UI Library</b>
+Made with ⚡ — <b>ERROR 404 UI</b> by RastGit
 </div>
