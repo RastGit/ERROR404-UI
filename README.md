@@ -1,312 +1,236 @@
-# ⚡ ERROR 404 UI Library
+# ⚡ ERROR 404 UI  —  v3.0
 
 <div align="center">
 
-![Version](https://img.shields.io/badge/version-2.0-blueviolet?style=for-the-badge)
-![Roblox](https://img.shields.io/badge/platform-Roblox-red?style=for-the-badge)
-![License](https://img.shields.io/badge/license-MIT-green?style=for-the-badge)
+![Version](https://img.shields.io/badge/version-3.0-blueviolet?style=for-the-badge)
+![Roblox](https://img.shields.io/badge/Roblox-GUI_Library-red?style=for-the-badge)
 
-**Lekka, stylowa biblioteka GUI dla Roblox.**  
-Rayfield-style API | Ciemny motyw | Animowane intro `ERROR → 404` | PC + Mobile
+**Własna biblioteka GUI dla Roblox.**  
+Ciemny motyw | Intro ERROR → 404 | PC + Mobile | Własne API
 
 </div>
 
 ---
 
-## 📋 Spis treści
+## 🔗 Jak uzyskać stały raw link (bez tokenu)
 
-- [Szybki start](#-szybki-start)
-- [CreateWindow](#-createwindow)
-- [CreateTab](#-createtab)
-- [Elementy UI](#-elementy-ui)
-  - [CreateSection](#createsection)
-  - [CreateButton](#createbutton)
-  - [CreateToggle](#createtoggle)
-  - [CreateSlider](#createslider)
-  - [CreateDropdown](#createdropdown)
-  - [CreateInput](#createinput)
-  - [CreateKeybind](#createkeybind)
-  - [CreateLabel](#createlabel)
-  - [AddParagraph](#addparagraph)
-  - [CreateDivider](#createdivider)
-- [Notify](#-notify)
-- [Metody okna](#-metody-okna)
-- [FAQ](#-faq)
+Token w raw URL wygasa — żeby link działał **zawsze i dla wszystkich**:
+
+1. Wejdź w repo → **Settings** → **Danger Zone** → **Change visibility** → **Public**
+2. Gotowy link wygląda tak:
+```
+https://raw.githubusercontent.com/RastGit/ERROR404-UI/main/Error404ui.lua
+```
+Bez żadnego `?token=...` — działa wiecznie.
 
 ---
 
 ## 🚀 Szybki start
 
 ```lua
-local Library = loadstring(game:HttpGet(
-    "https://raw.githubusercontent.com/RastGit/ERROR404-UI/refs/heads/main/Error404ui.lua?token=GHSAT0AAAAAADRHFUKXZYGUEEQQ7XY6UFEK2PGCFTQ"
+local E404 = loadstring(game:HttpGet(
+    "https://raw.githubusercontent.com/RastGit/ERROR404-UI/main/Error404ui.lua"
 ))()
 
-local Window = Library.CreateWindow({
-    Name            = "Mój Script",
-    LoadingSubtitle = "by Ktoś | v1.0",
-    ToggleUIKeybind = Enum.KeyCode.Insert,
-    ShowIntro       = true,
+local Win = E404.Window({
+    Title    = "Mój Script",
+    Subtitle = "v1.0",
+    Key      = Enum.KeyCode.Insert,
+    Intro    = true,
 })
 
-local Tab = Window:CreateTab({ Name = "Główna", Icon = "🏠" })
+local Tab = Win:Tab({ Label="Główna", Icon="🏠" })
 
-Tab:CreateSection("Gracz")
+Tab:Section("Gracz")
 
-Tab:CreateButton({
-    Name     = "Kliknij mnie",
+Tab:Button({
+    Label    = "Kliknij",
     Callback = function()
-        print("Kliknięto!")
+        print("klik!")
     end,
 })
 ```
 
 ---
 
-## 🪟 CreateWindow
+## 🪟 E404.Window
 
 ```lua
-local Window = Library.CreateWindow({
-    Name             = "Nazwa okna",       -- Tytuł w pasku
-    LoadingSubtitle  = "v1.0 • autor",    -- Podtytuł pod tytułem
-    ToggleUIKeybind  = Enum.KeyCode.Insert, -- Klawisz otwierania (PC)
-    ShowIntro        = true,               -- Animacja ERROR/404 (domyślnie: true)
+local Win = E404.Window({
+    Title    = "Tytuł okna",
+    Subtitle = "v1.0 • autor",
+    Key      = Enum.KeyCode.Insert,  -- klawisz toggle na PC
+    Intro    = true,                 -- false = brak animacji intro
 })
 ```
 
-| Parametr | Typ | Domyślnie | Opis |
-|----------|-----|-----------|------|
-| `Name` | `string` | `"ERROR 404 UI"` | Tytuł okna |
-| `LoadingSubtitle` | `string` | `"v2.0"` | Podtytuł |
-| `ToggleUIKeybind` | `Enum.KeyCode` | `Insert` | Klawisz toggle (PC) |
-| `ShowIntro` | `bool` | `true` | Animacja intro |
-
-> Na **mobile** zamiast klawisza pojawia się pływający przycisk ⚡ w lewym dolnym rogu.  
-> Okno **otwiera się automatycznie** po zakończeniu intro.
+> Okno **otwiera się automatycznie** po zakończeniu intro.  
+> Na mobile zamiast klawisza pojawia się pływający przycisk ⚡.
 
 ---
 
-## 📑 CreateTab
+## 📑 Win:Tab
 
 ```lua
-local Tab = Window:CreateTab({
-    Name = "Gracz",   -- Tooltip po najechaniu na ikonę
-    Icon = "🏃",      -- Ikona w bocznym pasku (emoji)
-})
-```
-
-| Parametr | Typ | Opis |
-|----------|-----|------|
-| `Name` | `string` | Tooltip zakładki |
-| `Icon` | `string` | Emoji / znak Unicode |
-
-**Zwraca:** obiekt `Tab` z metodami poniżej.
-
----
-
-## 🎛️ Elementy UI
-
-### CreateSection
-
-Nagłówek grupujący elementy.
-
-```lua
-Tab:CreateSection("Nazwa sekcji")
-```
-
----
-
-### CreateButton
-
-```lua
-Tab:CreateButton({
-    Name     = "Zrób coś",
-    Callback = function()
-        -- twój kod
-    end,
+local Tab = Win:Tab({
+    Label = "Gracz",   -- tooltip w sidebarze
+    Icon  = "🏃",      -- emoji w pasku bocznym
 })
 ```
 
 ---
 
-### CreateToggle
+## 🎛️ Elementy
 
+### Tab:Section
 ```lua
-local MyToggle = Tab:CreateToggle({
-    Name         = "Fly",
-    CurrentValue = false,
-    Callback     = function(Value)
-        print(Value) -- true / false
-    end,
-})
-
--- Ustawienie z kodu:
-MyToggle:Set(true)
-
--- Odczyt:
-print(MyToggle.Value)
+Tab:Section("Nazwa sekcji")
 ```
 
 ---
 
-### CreateSlider
-
+### Tab:Button
 ```lua
-local MySlider = Tab:CreateSlider({
-    Name         = "WalkSpeed",
-    Range        = {16, 250},   -- {Min, Max}
-    Increment    = 1,
-    Suffix       = " sp/s",     -- tekst po wartości (opcjonalny)
-    CurrentValue = 16,
-    Callback     = function(Value)
-        print(Value)
-    end,
-})
-
-MySlider:Set(100)
-print(MySlider.Value)
-```
-
----
-
-### CreateDropdown
-
-```lua
-local MyDropdown = Tab:CreateDropdown({
-    Name          = "Lokacja",
-    Options       = {"Spawn", "Sklep", "Boss"},
-    CurrentOption = "Spawn",
-    Callback      = function(Value)
-        print(Value)
-    end,
-})
-
-MyDropdown:Set("Sklep")
-MyDropdown:Refresh({"Nowa1", "Nowa2"})
-print(MyDropdown.Value)
-```
-
----
-
-### CreateInput
-
-```lua
-local MyInput = Tab:CreateInput({
-    Name            = "Pole tekstowe",
-    PlaceholderText = "Wpisz coś...",
-    CurrentString   = "",
-    Callback        = function(Value)
-        -- wywołuje się po Enter / utracie focusu
-        print(Value)
-    end,
-})
-
-MyInput:Set("nowy tekst")
-print(MyInput.Value)
-```
-
----
-
-### CreateKeybind
-
-```lua
-local MyKeybind = Tab:CreateKeybind({
-    Name           = "Sprint",
-    CurrentKeybind = "LeftShift",  -- nazwa z Enum.KeyCode
-    Callback       = function(Value)
-        print(Value.Name) -- Enum.KeyCode
-    end,
-})
-
-MyKeybind:Set(Enum.KeyCode.F)
-print(MyKeybind.Value) -- Enum.KeyCode
-```
-
-> Kliknij przycisk w UI → wciśnij klawisz → zostaje zapisany.
-
----
-
-### CreateLabel
-
-```lua
-Tab:CreateLabel("Tekst informacyjny")
-```
-
----
-
-### AddParagraph
-
-```lua
-Tab:AddParagraph({
-    Title   = "Nagłówek",
-    Content = "Dłuższy tekst opisu...",
+Tab:Button({
+    Label    = "Kliknij mnie",
+    Desc     = "Opis pod spodem (opcjonalny)",
+    Callback = function() end,
 })
 ```
 
 ---
 
-### CreateDivider
-
-Pozioma linia oddzielająca.
-
+### Tab:Toggle
 ```lua
-Tab:CreateDivider()
+local t = Tab:Toggle({
+    Label    = "Fly",
+    Desc     = "Tryb lotu",   -- opcjonalny
+    Value    = false,         -- stan startowy
+    Callback = function(v) print(v) end,
+})
+
+t:Set(true)         -- ustaw z kodu
+print(t.Value)      -- odczyt
 ```
 
 ---
 
-## 🔔 Notify
+### Tab:Slider
+```lua
+local s = Tab:Slider({
+    Label    = "WalkSpeed",
+    Desc     = "Prędkość chodzenia",  -- opcjonalny
+    Min      = 16,
+    Max      = 250,
+    Step     = 1,
+    Value    = 16,
+    Unit     = " sp/s",               -- tekst za liczbą
+    Callback = function(v) print(v) end,
+})
 
-Globalna funkcja – nie wymaga instancji okna.
+s:Set(100)
+print(s.Value)
+```
+
+---
+
+### Tab:Dropdown
+```lua
+local d = Tab:Dropdown({
+    Label    = "Lokacja",
+    Options  = {"Spawn", "Sklep", "Boss"},
+    Selected = "Spawn",
+    Callback = function(v) print(v) end,
+})
+
+d:Set("Sklep")              -- ustaw z kodu
+d:Reload({"Nowa1","Nowa2"}) -- zamień opcje
+print(d.Value)
+```
+
+---
+
+### Tab:Input
+```lua
+local i = Tab:Input({
+    Label    = "Pole tekstowe",
+    Hint     = "Wpisz coś...",
+    Default  = "",
+    Callback = function(txt) print(txt) end,  -- po Enter / utracie focusu
+})
+
+i:Set("nowy tekst")
+print(i.Value)
+```
+
+---
+
+### Tab:Keybind
+```lua
+local k = Tab:Keybind({
+    Label    = "Sprint",
+    Default  = "LeftShift",   -- nazwa z Enum.KeyCode
+    Callback = function(key) print(key.Name) end,
+})
+
+k:Set(Enum.KeyCode.F)
+print(k.Value)  -- Enum.KeyCode
+```
+
+---
+
+### Tab:Label
+```lua
+Tab:Label("Jakiś tekst informacyjny")
+```
+
+---
+
+### Tab:Paragraph
+```lua
+Tab:Paragraph({
+    Title = "Nagłówek",
+    Body  = "Dłuższy opis...",
+})
+```
+
+---
+
+### Tab:Divider
+```lua
+Tab:Divider()
+```
+
+---
+
+## 🔔 E404.Notify
 
 ```lua
-Library.Notify({
+E404.Notify({
     Title    = "Tytuł",
-    Content  = "Treść powiadomienia",
-    Duration = 4,       -- sekundy (domyślnie 4)
-    Type     = "success" -- "success" | "error" | "warning" | "info"
+    Message  = "Treść",
+    Duration = 4,       -- sekundy, domyślnie 4
+    Type     = "ok",    -- "ok" | "fail" | "warn" | "info"
 })
 ```
 
 | Typ | Kolor | Ikona |
 |-----|-------|-------|
-| `"success"` | 🟢 Zielony | ✓ |
-| `"error"` | 🔴 Czerwony | ✕ |
-| `"warning"` | 🟡 Pomarańczowy | ⚠ |
-| `"info"` | 🟣 Fioletowy | ℹ |
+| `"ok"`   | 🟢 Zielony       | ✓ |
+| `"fail"` | 🔴 Czerwony      | ✕ |
+| `"warn"` | 🟡 Pomarańczowy  | ⚠ |
+| `"info"` | 🟣 Fioletowy     | ℹ |
 
 ---
 
 ## 🔧 Metody okna
 
 ```lua
-Window:Open()     -- Otwórz menu
-Window:Close()    -- Zamknij menu
-Window:Toggle()   -- Przełącz open/close
-Window:Destroy()  -- Usuń całe GUI
+Win:Open()     -- otwórz
+Win:Close()    -- zamknij
+Win:Toggle()   -- przełącz
+Win:Destroy()  -- usuń GUI
 ```
-
----
-
-## ❓ FAQ
-
-**Q: Intro się nie pokazuje?**  
-A: Upewnij się że `ShowIntro = true` (domyślnie). Intro działa przez `CoreGui` z fallbackiem na `PlayerGui`.
-
-**Q: Okno nie otwiera się po intro?**  
-A: Okno otwiera się automatycznie po zakończeniu intro. Nie wywołuj `Window:Open()` ręcznie jeśli `ShowIntro = true`.
-
-**Q: Działa na mobile?**  
-A: Tak. Na mobile automatycznie pojawia się przycisk ⚡ w lewym dolnym rogu ekranu.
-
-**Q: Jak zmienić klawisz otwierania?**  
-A: Ustaw `ToggleUIKeybind = Enum.KeyCode.TWÓJ_KLAWISZ` przy tworzeniu okna.
-
-**Q: Jak wyłączyć intro?**  
-A: `ShowIntro = false`
-
-**Q: Mogę mieć wiele okien?**  
-A: Tak, każdy `Library.CreateWindow()` to niezależne okno.
 
 ---
 
@@ -314,13 +238,11 @@ A: Tak, każdy `Library.CreateWindow()` to niezależne okno.
 
 ```
 Error404UI/
-├── Error404ui.lua   ← główna biblioteka
-├── Example.lua      ← przykład użycia
-└── README.md        ← dokumentacja
+├── Error404ui.lua  ← biblioteka
+├── Example.lua     ← przykład
+└── README.md       ← docs
 ```
 
 ---
 
-<div align="center">
-Made with ⚡ — <b>ERROR 404 UI</b> by RastGit
-</div>
+<div align="center">⚡ <b>ERROR 404 UI</b> by RastGit</div>
