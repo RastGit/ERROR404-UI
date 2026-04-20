@@ -3,7 +3,7 @@
 -- ╚══════════════════════════════════════════════════════════╝
 
 local Library = loadstring(game:HttpGet(
-    "https://raw.githubusercontent.com/RastGit/ERROR404-UI/refs/heads/main/Error404ui.lua?token=GHSAT0AAAAAADRHFUKX3MXZCT3JIB726MZO2PGBLJQ"
+    "https://raw.githubusercontent.com/RastGit/ERROR404-UI/refs/heads/main/Error404ui.lua?token=GHSAT0AAAAAADRHFUKXZYGUEEQQ7XY6UFEK2PGCFTQ"
 ))()
 
 -- ══════════════════════════════════════════════════════════════
