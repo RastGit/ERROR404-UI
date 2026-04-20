@@ -4,7 +4,7 @@
 
 -- Załaduj bibliotekę (zmień URL na swój rawgithub link)
 local Error404UI = loadstring(game:HttpGet(
-    "https://raw.githubusercontent.com/TWOJ_GITHUB/Error404UI/main/Error404UI.lua"
+    "https://raw.githubusercontent.com/RastGit/ERROR404-UI/refs/heads/main/Error404ui.lua?token=GHSAT0AAAAAADRHFUKX3MXZCT3JIB726MZO2PGBLJQ"
 ))()
 
 -- ══════════════════════════════════════════════════════════════
