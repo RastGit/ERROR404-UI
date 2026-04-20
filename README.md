@@ -39,7 +39,7 @@ Ciemny motyw, płynne animacje, intro `ERROR` → `404`, pełna obsługa PC i mo
 
 ```lua
 local Error404UI = loadstring(game:HttpGet(
-    "https://raw.githubusercontent.com/TWOJ_GITHUB/Error404UI/main/Error404UI.lua"
+    "https://raw.githubusercontent.com/RastGit/ERROR404-UI/refs/heads/main/Error404ui.lua?token=GHSAT0AAAAAADRHFUKX3MXZCT3JIB726MZO2PGBLJQ"
 ))()
 
 local Window = Error404UI.new({
